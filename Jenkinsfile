@@ -18,5 +18,11 @@ pipeline {
       }
     }
 
+    stage('Docker WebServer') {
+      steps {
+        sh 'docker-compose -H tcp://localhost:2375 -t miguelangel/webserver'
+      }
+    }
+
   }
 }
