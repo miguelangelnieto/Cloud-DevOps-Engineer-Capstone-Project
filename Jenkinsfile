@@ -15,7 +15,7 @@ pipeline {
 
     stage('Docker WebServer') {
       steps {
-        sh 'docker-compose -H tcp://localhost:2375 -t miguelangel/webserver'
+        sh 'docker -H=tcp://localhost:2375 build . -t miguelangel/webserver'
       }
     }
 
