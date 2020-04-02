@@ -4,7 +4,7 @@ pipeline {
     stage('Python') {
       steps {
         sh 'pip3 install -r requirements.txt'
-        sh 'python --version'
+        sh 'pylint html_generator.py'
       }
     }
 
