@@ -15,7 +15,7 @@ pipeline {
 
     stage('Generate HTML') {
       steps {
-        sh 'python3 html_generation.py'
+        sh 'python3 html_generator.py'
       }
     }
 
