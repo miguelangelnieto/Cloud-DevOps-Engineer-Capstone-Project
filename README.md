@@ -33,11 +33,15 @@ To automate the publishing of the blog posts I have created a CI/CD pipeline wit
 
 The script's Python requirements are installed. They include `markdown`, `pylint` and `beautifulsoup4`.
 
-2. Python Lint**
+2. Python Lint
 
 Check the script's code with pylint. This is the output when the steps fails:
 
 ![Failed Lint](./doc/lint_failed.png)
+
+And this is the output when it passes:
+
+![OK Lint](./doc/lint_ok.png)
 
 3. Generage HTML
 
@@ -66,6 +70,10 @@ This will create the stack in the following order:
 5. Security group for the cluster.
 6. Kubernetes cluster.
 7. Kubernetes node group.
+
+The node group is created in EC2:
+
+![OK Lint](./doc/ec2.png)
 
 ## Commands to create the Kubernetes deployment
 
