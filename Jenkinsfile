@@ -37,8 +37,8 @@ docker -H=tcp://localhost:2375 push 628641662978.dkr.ecr.eu-west-1.amazonaws.com
 
     stage('Deployment') {
       steps {
-        sh '''kubectl apply -f deployment.yml
-kubectl apply -f loadbalancer.yml'''
+        sh '''kubectl apply -f kubernetes/deployment.yml
+kubectl apply -f kubernetes/loadbalancer.yml'''
       }
     }
 
