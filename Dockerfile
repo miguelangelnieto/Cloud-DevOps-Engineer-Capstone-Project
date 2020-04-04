@@ -1,5 +1,5 @@
 FROM nginx
 
-COPY ./posts/* /usr/share/nginx/html
+COPY ./posts/* /usr/share/nginx/html/
 
 EXPOSE 80
