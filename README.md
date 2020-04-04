@@ -23,43 +23,15 @@ python3 html_generator.py
 
 By default it will convert all Markdown files to HTML.
 
-## Jenkins Pipeline
-
-To automate the publishing of the blog posts I have created a CI/CD pipeline with rolling deployment. The pipeline has these steps:
-
-![Jenkins Pipeline](./doc/pipeline_steps.png)
-
-1. Python Req.
-
-The script's Python requirements are installed. They include `markdown`, `pylint` and `beautifulsoup4`.
-
-2. Python Lint
-
-Check the script's code with pylint. This is the output when the steps fails:
-
-![Failed Lint](./doc/lint_failed.png)
-
-And this is the output when it passes:
-
-![OK Lint](./doc/lint_ok.png)
-
-3. Generage HTML
-
-The HTML pages are generated.
-
-4. Build & Push
-
-The docker image is build using the Dockerfile and the image is pushed to Amazon Elastic Container Registry.
-
 ## Kubernetes Cluster
 
-Cloudformation is used to deploy the Kubernetes Cluster and the NodeGroup. The code is in `cloudformation` directory. It is divided in two stacks, one for the network (network.yaml) and a second one for the cluster itself (EKS.yaml).
+Cloudformation is used to deploy the Kubernetes Cluster and the NodeGroup. The code is in `cloudformation` directory. It is divided in two stacks, one for the network (network.yml) and a second one for the cluster itself (EKS.yml).
 
 There are two scripts to create and update the stacks. For example, to create both stacks:
 
 ```
-./stack-create.sh capstone-stack network.yaml network-parameters.json
-./stack-create.sh capstone-eks EKS.yaml EKS-parameters.json
+./stack-create.sh capstone-stack network.yml network-parameters.json
+./stack-create.sh capstone-eks EKS.yml EKS-parameters.json
 ```
 This will create the stack in the following order:
 
@@ -75,42 +47,80 @@ The node group is created in EC2:
 
 ![OK Lint](./doc/ec2.png)
 
-## Commands to create the Kubernetes deployment
+## Jenkins Pipeline
 
-Once the Jenkins pipeline has finished and the cluster is deployed, we can create the Kubernetes deployment. The files are located in `kubernetes` directory. To deploy them:
+I am using a CI/CD pipeline on a rolling deployment. On each new HTML generated, the docker image is updated, pushed to AWS and the Kubernetes nodes are patched to restart with the new image in the repository. There is a load balancer before the exposed 80 TCP ports to avoid having downtime.
 
-1. Create a  `kubectl` configuration:
+The pipeline has these steps:
 
-```
-$ aws eks --region eu-west-1 update-kubeconfig --name capstone-project
-```
+![Jenkins Pipeline](./doc/pipeline_steps.png)
 
-1. Create the Web Servers deployment:
+1. Python Req.
 
-```
-$ kubectl apply -f deployment.yml
-```
-
-2. Check the pod has been created:
+The script's Python requirements are installed. They include `markdown`, `pylint` and `beautifulsoup4`.
 
 ```
-$ kubectl get pods
-NAME                         READY   STATUS    RESTARTS   AGE
-webserver-7f775f67cc-l87ff   1/1     Running   0          3m34s
+pip3 install -r requirements.txt
 ```
 
-3. Create the loadbalancer service:
+2. Python Lint
+
+Check the script's code with pylint. 
 
 ```
-$ kubectl apply -f loadbalancer.yml
+pylint --disable=W0311 html_generator.py
 ```
 
-4. Get the loadbalancer public DNS record:
+This is the output when the steps fails:
+
+![Failed Lint](./doc/lint_failed.png)
+
+And this is the output when it passes:
+
+![OK Lint](./doc/lint_ok.png)
+
+3. Generage HTML
+
+The HTML pages are generated.
 
 ```
-kubectl get service/loadbalancer
-NAME           TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)        AGE
-loadbalancer   LoadBalancer   172.20.100.179   ad816d318c8e34084acf46eeeedd3266-990754864.eu-west-1.elb.amazonaws.com   80:30308/TCP   58s
+python3 html_generator.py
+```
+
+4. Build & Push
+
+The docker image is build using the Dockerfile and the image is pushed to Amazon Elastic Container Registry.
+
+```
+aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 628641662978.dkr.ecr.eu-west-1.amazonaws.com/capstone
+docker -H=tcp://localhost:2375 build -t capstone .
+docker -H=tcp://localhost:2375 tag capstone:latest 628641662978.dkr.ecr.eu-west-1.amazonaws.com/capstone:latest
+docker -H=tcp://localhost:2375 push 628641662978.dkr.ecr.eu-west-1.amazonaws.com/capstone:latest
+```
+
+5. Docker Container
+
+A Docker Container is started to test if there is any problem using the image.
+
+```
+docker -H=tcp://localhost:2375 container run 628641662978.dkr.ecr.eu-west-1.amazonaws.com/capstone:latest
+```
+
+6. Deployment
+
+The Kubernetes pods are deployed using the pushed image. This is a no-op if the deployment files have not changed.
+
+```
+kubectl apply -f deployment.yml
+kubectl apply -f loadbalancer.yml
+```
+
+7. Rollout Deployment
+
+Rollout the pods to use the new pushed image.
+
+```
+kubectl rollout restart deployment/webserver
 ```
 
 ## View the public web page
