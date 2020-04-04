@@ -127,6 +127,16 @@ kubectl rollout restart deployment/webserver
 
 Finally, enter the public DNS record in the web browser to access the page.
 
+```
+$ kubectl get deployment
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+webserver   1/1     1            1           7m30s
+$ kubectl get service
+NAME           TYPE           CLUSTER-IP    EXTERNAL-IP                                                              PORT(S)        AGE
+kubernetes     ClusterIP      172.20.0.1    <none>                                                                   443/TCP        19m
+loadbalancer   LoadBalancer   172.20.75.5   a7d6a3407345144acbc7e1c2c7009a4c-669847975.eu-west-1.elb.amazonaws.com   80:31022/TCP   7m36s
+```
 
+<http://a7d6a3407345144acbc7e1c2c7009a4c-669847975.eu-west-1.elb.amazonaws.com>
 
 ![Webpage](./doc/web.png)
