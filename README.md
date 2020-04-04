@@ -49,9 +49,7 @@ The node group is created in EC2:
 
 ## Jenkins Pipeline
 
-I am using a CI/CD pipeline on a rolling deployment. On each new HTML generated, the docker image is updated, pushed to AWS and the Kubernetes nodes are rolled out so they restart with the new image from the repository. There is a load balancer before the exposed 80 TCP ports to avoid having downtime.
-
-The pipeline has these steps:
+I am using a CI/CD pipeline on a rolling deployment. On each new HTML generated, the docker image is updated, pushed to AWS and the Kubernetes pods are rolled out so they restart with the new image from the repository. There is a load balancer before the exposed 80 TCP ports to avoid having downtime. These are the steps in more detail:
 
 ![Jenkins Pipeline](./doc/pipeline_steps.png)
 
