@@ -49,7 +49,7 @@ The node group is created in EC2:
 
 ## Jenkins Pipeline
 
-I am using a CI/CD pipeline on a rolling deployment. On each new HTML generated, the docker image is updated, pushed to AWS and the Kubernetes nodes are patched to restart with the new image in the repository. There is a load balancer before the exposed 80 TCP ports to avoid having downtime.
+I am using a CI/CD pipeline on a rolling deployment. On each new HTML generated, the docker image is updated, pushed to AWS and the Kubernetes nodes are rolled out so they restart with the new image from the repository. There is a load balancer before the exposed 80 TCP ports to avoid having downtime.
 
 The pipeline has these steps:
 
@@ -125,6 +125,8 @@ kubectl rollout restart deployment/webserver
 
 ## View the public web page
 
-Finally, enter the public DNS record in the web browser to access the page:
+Finally, enter the public DNS record in the web browser to access the page.
+
+
 
 ![Webpage](./doc/web.png)

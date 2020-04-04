@@ -4,4 +4,6 @@ COPY ./posts/ /usr/share/nginx/html/
 
 EXPOSE 80
 
-CMD ["nginx"]
+STOPSIGNAL SIGTERM
+
+CMD ["nginx", "-g", "daemon off;"]
