@@ -47,7 +47,7 @@ def write_html(html_documents):
         print("No HTML pages to write.")
     else:
         for filename, content in html_documents.items():
-            with open(HTML_DIR+filename, 'w', encoding='utf-8') as mdfile:
+            with open(HTML_DIR+filename,'w', encoding='utf-8') as mdfile:
                 mdfile.write(content)
                 print("Generated: "+filename)
 
