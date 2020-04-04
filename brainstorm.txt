@@ -1,7 +1,0 @@
-1. Lint python.
-2. Build the HTML.
-3. Build the docker ngix and copy the HTMLs.
-4. Push the docker image.
-5. Recreate the Kubernetes cluster.
-
-- Cloudformation that builds a Kubernetes cluster that runs the docker image.
